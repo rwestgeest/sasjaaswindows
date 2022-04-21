@@ -35,14 +35,13 @@ Vagrant.configure("2") do |config|
         #vb.customize ["guestcontrol", :id, "updateadditions", "--source", "/usr/share/virtualbox/VBoxGuestAdditions.iso", "--verbose"]
     end
 
-    config.vm.provision "shell", binary: true, privileged: true, reboot: true, inline:  '''
-    echo "installing python"
-    W:\python-3.10.4-amd64.exe /quiet InstallAllUsers=1 PrependPath=1
-    echo "updating guest additions"
-    D:\VBoxWindowsAdditions.exe /S
+    config.vm.provision "shell", binary: true, privileged: true, inline:  '''
+        reg add "HKEY_LOCAL_MACHINE\\SYSTEM\\CurrentControlSet\\Control\\Terminal Server" /v fDenyTSConnections /t REG_DWORD /d 0 /f
+        netsh advfirewall firewall set rule group="remote desktop" new enable=yes
+        net localgroup "remote desktop users" IEUser /add
+        echo "installing python"
+        W:\python-3.10.4-amd64.exe /quiet InstallAllUsers=1 PrependPath=1
+        echo "updating guest additions"
+        D:\VBoxWindowsAdditions.exe /S
     '''
-    #config.vm.provision "shell", binary: true, privileged: true, inline:  '''
-    #echo "installing google drive"
-    #W:\GoogleDriveSetup.exe /quiet
-    #'''
 end
